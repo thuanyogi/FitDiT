@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitDiT - Virtual Try-On Studio - UI Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            color: var(--gray-800);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header Styles */
+        .header-container {
+            background: var(--bg-gradient);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .badge-container img {
+            height: 20px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .info-box a {
+            color: #fbbf24;
+            text-decoration: underline;
+        }
+
+        /* Tabs */
+        .tabs {
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-header {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+            position: relative;
+            top: 2px;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+
+        .step {
+            background: var(--gray-100);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--gray-500);
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Layout */
+        .row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .subsection-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .help-text {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .image-upload {
+            border: 2px dashed var(--gray-300);
+            border-radius: 8px;
+            padding: 3rem 1rem;
+            text-align: center;
+            background: var(--gray-50);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .image-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        input[type="range"] {
+            padding: 0;
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .btn-group button {
+            flex: 1;
+        }
+
+        /* Gallery */
+        .gallery {
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 1rem;
+            background: var(--gray-50);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+            font-size: 0.95rem;
+        }
+
+        /* Guide Cards */
+        .guide-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .guide-step {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .guide-card ul, .guide-card ol {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .guide-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Examples */
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .example-item {
+            aspect-ratio: 3/4;
+            background: var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        .example-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Slider */
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-value {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .dropdown select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-info {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Divider */
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-title {
+                font-size: 1.75rem;
+            }
+
+            .row {
+                flex-direction: column;
+            }
+
+            .column {
+                min-width: 100%;
+            }
+
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Preview Badge */
+        .preview-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--warning-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-badge">
+        🎨 UI PREVIEW MODE
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header-container">
+            <h1 class="header-title">✨ FitDiT - Virtual Try-On Studio</h1>
+            <p class="header-subtitle">High-fidelity AI-powered garment fitting using Diffusion Transformers</p>
+            <div class="badge-container">
+                <a href="https://github.com/BoyuanJiang/FitDiT">
+                    <img src='https://img.shields.io/badge/GitHub-Repo-blue?style=flat&logo=GitHub' alt='GitHub'>
+                </a>
+                <a href="https://arxiv.org/abs/2411.10499">
+                    <img src='https://img.shields.io/badge/arXiv-2411.10499-red?style=flat&logo=arXiv&logoColor=red' alt='arxiv'>
+                </a>
+                <a href="http://demo.fitdit.byjiang.com/">
+                    <img src='https://img.shields.io/badge/Demo-Gradio-gold?style=flat&logo=Gradio&logoColor=red' alt='Demo'>
+                </a>
+                <a href='https://byjiang.com/FitDiT/'>
+                    <img src='https://img.shields.io/badge/Webpage-Project-silver?style=flat&logo=&logoColor=orange' alt='webpage'>
+                </a>
+                <a href="https://raw.githubusercontent.com/BoyuanJiang/FitDiT/refs/heads/main/LICENSE">
+                    <img src='https://img.shields.io/badge/License-CC BY--NC--SA--4.0-lightgreen?style=flat&logo=Lisence' alt='License'>
+                </a>
+            </div>
+            <div class="info-box">
+                <b>⚡ Quick Start:</b> Upload your model photo → Select garment → Adjust mask → Generate results!<br>
+                <small>For Non-commercial Use Only | ⭐ <a href="https://github.com/BoyuanJiang/FitDiT">Star us on GitHub</a></small>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-header">
+                <button class="tab-button active" onclick="switchTab(0)">🚀 Quick Try-On</button>
+                <button class="tab-button" onclick="switchTab(1)">⚙️ Advanced Settings</button>
+                <button class="tab-button" onclick="switchTab(2)">📖 User Guide</button>
+            </div>
+
+            <!-- Tab 1: Quick Try-On -->
+            <div class="tab-content active" id="tab-0">
+                <div class="section-title">Step-by-step virtual try-on experience</div>
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step active">1️⃣ Upload</div>
+                    <div class="step">→</div>
+                    <div class="step">2️⃣ Adjust</div>
+                    <div class="step">→</div>
+                    <div class="step">3️⃣ Generate</div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="row">
+                    <div class="column">
+                        <h4 class="subsection-title">📸 Model Photo</h4>
+                        <div class="image-upload">
+                            <div class="image-upload-icon">📷</div>
+                            <div>Click to upload or drag & drop</div>
+                            <div class="help-text">Supports: JPG, PNG</div>
+                        </div>
+                        <p class="help-text">💡 Best: Full body, front-facing, good lighting</p>
+                    </div>
+
+                    <div class="column">
+                        <h4 class="subsection-title">👕 Garment</h4>
+                        <div class="image-upload">
+                            <div class="image-upload-icon">👔</div>
+                            <div>Click to upload or drag & drop</div>
+                            <div class="help-text">Supports: JPG, PNG</div>
+                        </div>
+                        <p class="help-text">💡 Best: Clean background, clear view of garment</p>
+                    </div>
+                </div>
+
+                <!-- Settings Row -->
+                <div class="row">
+                    <div class="column">
+                        <div class="dropdown">
+                            <label>🏷️ Garment Category</label>
+                            <select>
+                                <option>Upper-body</option>
+                                <option>Lower-body</option>
+                                <option>Dresses</option>
+                            </select>
+                            <div class="dropdown-info">Select the type of garment you want to try on</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="dropdown">
+                            <label>📐 Resolution</label>
+                            <select>
+                                <option>768x1024 (Fast)</option>
+                                <option selected>1152x1536 (Balanced)</option>
+                                <option>1536x2048 (Best)</option>
+                            </select>
+                            <div class="dropdown-info">Higher resolution = better quality but slower</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presets -->
+                <h4 class="subsection-title">⚡ Quick Presets</h4>
+                <div class="btn-group">
+                    <button class="btn-secondary btn-sm">⚡ Fast (15s)</button>
+                    <button class="btn-primary btn-sm">⚖️ Balanced (30s)</button>
+                    <button class="btn-secondary btn-sm">💎 Best Quality (60s)</button>
+                </div>
+
+                <!-- Results Section -->
+                <div class="row">
+                    <div class="column">
+                        <h4 class="subsection-title">🎨 Mask Adjustment</h4>
+                        <div class="image-upload" style="background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, #e0e0e0 10px, #e0e0e0 20px);">
+                            <div style="color: var(--gray-600);">✏️ Interactive mask editor will appear here</div>
+                        </div>
+                        <p class="help-text">✏️ Fine-tune the mask by drawing directly or use sliders below</p>
+                    </div>
+
+                    <div class="column">
+                        <h4 class="subsection-title">✨ Results</h4>
+                        <div class="gallery">
+                            <div>Your try-on results will appear here</div>
+                        </div>
+                        <p class="help-text">📥 Click on images to download</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <h4 class="subsection-title">🎬 Action</h4>
+                <div class="btn-group">
+                    <button class="btn-primary btn-lg">1️⃣ Generate Mask</button>
+                    <button class="btn-primary btn-lg">2️⃣ Run Try-On</button>
+                    <button class="btn-secondary btn-lg">🗑️ Clear All</button>
+                </div>
+
+                <!-- Examples -->
+                <hr>
+                <div class="section-title">🖼️ Try Our Examples</div>
+                <div class="row">
+                    <div class="column">
+                        <h4 class="subsection-title">Model Examples</h4>
+                        <div class="examples-grid">
+                            <div class="example-item">Example 1</div>
+                            <div class="example-item">Example 2</div>
+                            <div class="example-item">Example 3</div>
+                            <div class="example-item">Example 4</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <h4 class="subsection-title">Garment Examples</h4>
+                        <div class="examples-grid">
+                            <div class="example-item">Garment 1</div>
+                            <div class="example-item">Garment 2</div>
+                            <div class="example-item">Garment 3</div>
+                            <div class="example-item">Garment 4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Advanced Settings -->
+            <div class="tab-content" id="tab-1">
+                <div class="section-title">Fine-tune generation parameters for optimal results</div>
+
+                <h4 class="subsection-title">🎯 Mask Offset Adjustments</h4>
+                <p class="help-text">Use these sliders to precisely adjust the mask boundaries</p>
+
+                <div class="row">
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>⬆️ Top Offset</label>
+                                <span class="slider-value">0</span>
+                            </div>
+                            <input type="range" min="-200" max="200" value="0">
+                            <div class="dropdown-info">Adjust mask boundary upward/downward</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>⬇️ Bottom Offset</label>
+                                <span class="slider-value">0</span>
+                            </div>
+                            <input type="range" min="-200" max="200" value="0">
+                            <div class="dropdown-info">Adjust mask boundary upward/downward</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>⬅️ Left Offset</label>
+                                <span class="slider-value">0</span>
+                            </div>
+                            <input type="range" min="-200" max="200" value="0">
+                            <div class="dropdown-info">Adjust mask boundary left/right</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>➡️ Right Offset</label>
+                                <span class="slider-value">0</span>
+                            </div>
+                            <input type="range" min="-200" max="200" value="0">
+                            <div class="dropdown-info">Adjust mask boundary left/right</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4 class="subsection-title">🎨 Generation Parameters</h4>
+                <div class="row">
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>🔄 Inference Steps</label>
+                                <span class="slider-value">20</span>
+                            </div>
+                            <input type="range" min="15" max="30" value="20">
+                            <div class="dropdown-info">More steps = higher quality but slower (recommended: 20-25)</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>🎚️ Guidance Scale</label>
+                                <span class="slider-value">2.5</span>
+                            </div>
+                            <input type="range" min="1.0" max="5.0" step="0.1" value="2.5">
+                            <div class="dropdown-info">How closely to follow the input (recommended: 2.0-3.0)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>🎲 Random Seed</label>
+                                <span class="slider-value">-1</span>
+                            </div>
+                            <input type="range" min="-1" max="1000" value="-1">
+                            <div class="dropdown-info">-1 for random, or set a number for reproducible results</div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <label>🖼️ Number of Images</label>
+                                <span class="slider-value">1</span>
+                            </div>
+                            <input type="range" min="1" max="4" value="1">
+                            <div class="dropdown-info">Generate multiple variations (more = slower)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-secondary">♻️ Reset to Defaults</button>
+            </div>
+
+            <!-- Tab 3: User Guide -->
+            <div class="tab-content" id="tab-2">
+                <div class="guide-card">
+                    <div class="guide-step">📖 How to Use FitDiT</div>
+                    <ol>
+                        <li><b>Upload Images:</b> Choose a model photo and a garment image, or select from our examples</li>
+                        <li><b>Select Category:</b> Pick the garment type (Upper-body, Lower-body, or Dresses)</li>
+                        <li><b>Generate Mask:</b> Click "Step 1: Run Mask" to detect the area to replace</li>
+                        <li><b>Adjust Mask (Optional):</b> Fine-tune the mask using offset sliders or draw directly on the image</li>
+                        <li><b>Configure Settings:</b> Choose quality presets or customize advanced parameters</li>
+                        <li><b>Generate Result:</b> Click "Step 2: Run Try-on" and wait for your amazing result!</li>
+                    </ol>
+                </div>
+
+                <div class="guide-card">
+                    <div class="guide-step">💡 Tips for Best Results</div>
+                    <ul>
+                        <li>Use clear, well-lit photos with the person facing forward</li>
+                        <li>Garment images should have clean backgrounds</li>
+                        <li>Higher resolution settings (1536x2048) give better quality but take longer</li>
+                        <li>Adjust mask offsets if the initial mask doesn't fit perfectly</li>
+                        <li>Try different seeds to get varied results</li>
+                    </ul>
+                </div>
+
+                <div class="guide-card">
+                    <div class="guide-step">⚙️ Parameter Guide</div>
+                    <ul>
+                        <li><b>Steps (15-30):</b> More steps = better quality but slower. Start with 20.</li>
+                        <li><b>Guidance Scale (1-5):</b> Controls how closely the result follows your input. 2-3 is ideal.</li>
+                        <li><b>Seed:</b> Use -1 for random results, or set a specific number for reproducible results.</li>
+                        <li><b>Resolution:</b> 768x1024 (Fast), 1152x1536 (Balanced), 1536x2048 (Best Quality)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(index) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(`tab-${index}`).classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        // Interactive sliders
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const valueDisplay = this.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = this.value;
+                }
+            });
+        });
+
+        // Simulate step progression
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.step:not(.step:nth-child(2n))');
+
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON' && e.target.textContent.includes('Generate')) {
+                if (currentStep < steps.length) {
+                    steps[currentStep].classList.remove('active');
+                    currentStep = (currentStep + 1) % steps.length;
+                    steps[currentStep].classList.add('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
